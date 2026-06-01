@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keplar World Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Oswald', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .dashboard {
+            background-color: #1f2833;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #66fcf1; /* নিয়ন সায়ান টাচ */
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #45a29e;
+            font-size: 14px;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+        .input-group {
+            margin-bottom: 25px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+        input[type="text"] {
+            width: 90%;
+            padding: 10px;
+            background: #0b0c10;
+            border: 1px solid #45a29e;
+            color: #fff;
+            border-radius: 5px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1rem;
+            outline: none;
+        }
+        input[type="text"]:focus {
+            border-color: #66fcf1;
+            box-shadow: 0 0 5px #66fcf1;
+        }
+        .switch-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+        /* টগল সুইচের ডিজাইন */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 54px;
+            height: 28px;
+        }
+        .switch input { display: none; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #444;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px; width: 20px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #66fcf1;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+            background-color: #0b0c10;
+        }
+        .btn-update {
+            width: 100%;
+            padding: 12px;
+            background-color: #66fcf1;
+            color: #0b0c10;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            font-family: 'Oswald', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        .btn-update:hover {
+            background-color: #45a29e;
+            color: #fff;
+        }
+        #status-msg {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+            height: 20px;
+            color: #66fcf1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <h1>KEPLAR WORLD</h1>
+        <div class="subtitle">NEXUS CONTROL PANEL</div>
+
+        <div class="input-group">
+            <label for="groupId">Target Group ID:</label>
+            <input type="text" id="groupId" placeholder="e.g. 1234567890-123@g.us">
+        </div>
+
+        <div class="switch-group">
+            <span>Anti-Status System</span>
+            <label class="switch">
+                <input type="checkbox" id="antiStatusToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="switch-group">
+            <span>Auto-Sticker Maker</span>
+            <label class="switch">
+                <input type="checkbox" id="autoStickerToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <button class="btn-update" onclick="updateSettings()">UPDATE CORE</button>
+        <div id="status-msg"></div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        function updateSettings() {
+            const gId = document.getElementById('groupId').value.trim();
+            const aStatus = document.getElementById('antiStatusToggle').checked;
+            const aSticker = document.getElementById('autoStickerToggle').checked;
+
+            if (!gId) {
+                showMsg("❌ Please enter a valid Group ID!", "#ff4c4c");
+                return;
+            }
+
+            // সার্ভারে ডেটা পাঠানো
+            socket.emit('update_settings', {
+                groupId: gId,
+                antistatus: aStatus,
+                autosticker: aSticker
+            });
+        }
+
+        // সার্ভার থেকে রেসপন্স রিসিভ করা
+        socket.on('settings_saved', (msg) => {
+            showMsg(msg, "#66fcf1");
+        });
+
+        function showMsg(text, color) {
+            const msgDiv = document.getElementById('status-msg');
+            msgDiv.innerText = text;
+            msgDiv.style.color = color;
+            setTimeout(() => msgDiv.innerText = '', 4000); // ৪ সেকেন্ড পর মেসেজ মুছে যাবে
+        }
+    </script>
+</body>
+</html>
