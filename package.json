@@ -1,14 +1,18 @@
 {
   "name": "keplar-world",
-  "version": "1.0.0",
-  "description": "Keplar World Secure WhatsApp Server by Deep",
+  "version": "2.0.0",
+  "description": "Keplar World Advanced Secure WhatsApp Server by Deep",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
     "express": "^4.18.2",
+    "fluent-ffmpeg": "^2.1.3",
+    "qrcode-terminal": "^0.12.0",
+    "socket.io": "^4.7.2",
     "whatsapp-web.js": "^1.23.0",
-    "qrcode-terminal": "^0.12.0"
+    "yt-search": "^2.10.4",
+    "ytdl-core": "^4.11.5"
   }
 }
